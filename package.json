@@ -1,0 +1,24 @@
+{
+  "name": "ros2_xviz_bridge",
+  "version": "0.0.1",
+  "description": "ROS2 to XVIZ (Uber) bridge, send messages from ROS2 which is converted on the fly to XVIZ.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/klintan/ros2_xviz_bridge.git"
+  },
+  "author": "Andreas Klintberg",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/klintan/ros2_xviz_bridge/issues"
+  },
+  "homepage": "https://github.com/klintan/ros2_xviz_bridge#readme",
+  "dependencies": {
+    "rclnodejs": "^0.9.0",
+    "xviz": "github:uber/xviz"
+  }
+}
