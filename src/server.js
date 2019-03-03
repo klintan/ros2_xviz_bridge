@@ -15,15 +15,39 @@ function connectionId() {
 }
 
 
+function unpackFrame(frame, options = {}) {
+  const shouldThrow = options.shouldThrow || true;
+
+  let json;
+  let isBinary = false;
+
+  if (frame instanceof Buffer) {
+    json = parseBinaryXVIZ(
+        frame.buffer.slice(frame.byteOffset, frame.byteOffset + frame.byteLength)
+    );
+    isBinary = true;
+  } else if (typeof frame === 'string') {
+    json = JSON.parse(frame);
+  } else if (shouldThrow) {
+    throw new Error('Unknown frame type');
+  }
+
+  return {json, isBinary};
+}
+
+
 const xvizMetaBuilder = new XVIZMetadataBuilder();
 
-const imageMetaData = xvizMetaBuilder;
-imageMetaData.stream("imageStream")
+const xb = xvizMetaBuilder;
+xb.stream('/vehicle_pose').category('pose');
+
+xb.stream("imageStream")
     .category('primitive')
     .type('image');
 
+
 const xvizBuilder = new XVIZBuilder({
-  metadata: imageMetaData // See XVIZMetadataBuilder for generating metadata object
+  metadata: xb // See XVIZMetadataBuilder for generating metadata object
 });
 
 // Connection State
@@ -63,7 +87,6 @@ class ConnectionContext {
     this.onClose.bind(this);
     this.onMessage.bind(this);
     this.sendFrame.bind(this);
-    this.onImage.bind(this);
     this.initROS.bind(this);
 
   }
@@ -77,7 +100,7 @@ class ConnectionContext {
 
       const node = rclnodejs.createNode('ros2_xvis_bridge');
 
-      node.createSubscription(Image, '/iris/image_rect_color', {}, this.onImage);
+      node.createSubscription(Image, '/iris/image_rect_color', {}, (message) => this.onImage(message));
       //node.createSubscription(CompressedImage, '/iris/image_rect_color/compressed', {}, image_cb);
       //node.createSubscription(String, '/iris/debugger', {}, image_cb);
 
@@ -89,10 +112,18 @@ class ConnectionContext {
   onImage(message) {
     console.log("message recieved");
 
+    // add required pose frame
+    xvizBuilder
+        .pose('/vehicle_pose')
+        .timestamp("2011-09-26 14:19:35.668269525")
+        .mapOrigin(49.014252384349, 8.3527319386539, 110.09310150146)
+        .orientation(0.03338, 0.022969, -1.5849129803847)
+        .position(0, 0, 0);
+
+
     const width = message['width'];
     const height = message['height'];
 
-    console.log(xvizBuilder);
     // responsenodeBufferToTypedArray
     xvizBuilder
         .primitive("imageStream")
@@ -100,7 +131,7 @@ class ConnectionContext {
         .dimensions(width, height);
 
     let frame = xvizBuilder.getFrame();
-    this.ws.send(frame);
+    this.ws.send(JSON.stringify(frame));
   }
 
 
