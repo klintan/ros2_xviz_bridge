@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js"
+    "start": "node -r esm src/index.js"
   },
   "repository": {
     "type": "git",
@@ -18,7 +18,11 @@
   },
   "homepage": "https://github.com/klintan/ros2_xviz_bridge#readme",
   "dependencies": {
+    "@xviz/builder": "^1.0.0-beta.1",
+    "esm": "^3.2.9",
+    "loaders.gl": "^0.3.5",
     "rclnodejs": "^0.9.0",
-    "xviz": "github:uber/xviz"
+    "ws": "^6.1.4",
+    "xviz": "^0.2.0"
   }
 }

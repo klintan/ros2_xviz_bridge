@@ -8,10 +8,15 @@ This is an attempt to create a bridge/server for converting ROS2 messages into a
 
 ## Installation
 
-`npm install`
+`yarn install`
 
 ## Usage
 
 `npm start`
+
+
+## 3rd party licenses
+Code from Uber/Xviz is used https://github.com/uber/xviz/blob/master/LICENSE
+
 
 
